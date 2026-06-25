@@ -134,7 +134,17 @@ def create_app(rank_df, state_df, data_ind, equity_curve, summary, name_map):
                       dcc.Dropdown(id="sym-dd", options=options, value=default_sym, clearable=False,
                                    style={"width": "240px", "display": "inline-block", "color": "#333"})],
                      style={"padding": "8px 12px"}),
-            dcc.Graph(id="kline"),
+            dbc.Row([
+                dbc.Col(dcc.Graph(id="kline"), width=8),
+                dbc.Col([
+                    html.H6("📈 行情深度分析", style={"color": "#26a69a", "marginBottom": "8px"}),
+                    html.Pre(id="deep-text", style={
+                        "color": "#ccc", "fontSize": "12px", "whiteSpace": "pre-wrap",
+                        "wordBreak": "break-word", "maxHeight": "560px", "overflowY": "auto",
+                        "backgroundColor": "#0e1117", "padding": "10px", "borderRadius": "6px",
+                        "fontFamily": "Consolas, monospace", "lineHeight": "1.6"}),
+                ], width=4),
+            ]),
         ], style=CARD))),
         dbc.Row(dbc.Col(dbc.Card([dcc.Graph(figure=make_equity_curve(equity_curve))], style=CARD))),
         dbc.Row([
@@ -148,10 +158,18 @@ def create_app(rank_df, state_df, data_ind, equity_curve, summary, name_map):
                                style={"color": "#666", "fontSize": "12px", "textAlign": "center", "padding": "16px"}))),
     ], fluid=True, style={"backgroundColor": "#0e1117", "minHeight": "100vh"})
 
-    @app.callback(Output("kline", "figure"), Input("sym-dd", "value"))
+    from core.deep_analysis import build_deep_analysis
+    score_map = {r["symbol"]: r.to_dict() for _, r in rank_df.iterrows()} if not rank_df.empty else {}
+
+    @app.callback(
+        [Output("kline", "figure"), Output("deep-text", "children")],
+        Input("sym-dd", "value"),
+    )
     def _update(sym):
         if sym and sym in data_ind:
-            return make_kline_chart(sym, name_map.get(sym, sym), data_ind[sym])
-        return go.Figure()
+            fig = make_kline_chart(sym, name_map.get(sym, sym), data_ind[sym])
+            text = build_deep_analysis(sym, name_map.get(sym, sym), data_ind[sym], score_map.get(sym))
+            return fig, text
+        return go.Figure(), "请选择品种"
 
     return app
