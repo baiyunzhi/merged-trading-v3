@@ -1,0 +1,56 @@
+{
+  "_comment": "合并版本 v3 — 融合两套期货系统：claude系回测引擎+风控 / 搭建系选品+实时数据",
+
+  "data_source": "csv",
+  "_data_source_note": "csv=历史CSV严谨回测(默认) / akshare=实时拉取盯盘选品",
+  "data_path": "data/raw/china_futures_bars.csv",
+
+  "initial_equity": 500000,
+  "risk_per_trade": 2500,
+  "max_risk_pct": 0.005,
+  "max_portfolio_risk_pct": 0.02,
+  "margin_rate": 0.12,
+  "max_open_positions": 6,
+  "force_close_on_end": true,
+
+  "atr_period": 14,
+  "atr_stop_mult": 2.0,
+
+  "volume_breakout_ratio": 1.5,
+  "min_body_atr_ratio": 0.6,
+
+  "use_structure_stop": true,
+  "structure_stop_buffer_atr": 0.3,
+
+  "partial_exit_r": 2.0,
+  "partial_exit_ratio": 0.5,
+  "trailing_start_r": 2.5,
+  "trailing_atr_mult": 2.5,
+  "breakeven_r": 1.0,
+
+  "min_adx": 22,
+  "min_bb_width_pct": 0.05,
+
+  "max_sector_same_direction": 2,
+  "max_sector_risk_pct": 0.03,
+
+  "entry_slippage_ticks": 0.5,
+  "stop_slippage_ticks": 2.0,
+  "commission_per_contract": 3.0,
+
+  "time_stop_bars": 30,
+  "time_stop_min_r": 0.3,
+
+  "use_trend_filter": true,
+  "use_dow_theory": true,
+  "allowed_dow_states": ["BULL_CONFIRMED", "BULL_PULLBACK"],
+  "allow_short": true,
+  "allowed_bear_states": ["BEAR_CONFIRMED", "BEAR_PULLBACK"],
+
+  "contract_multiplier": 10,
+
+  "score_weights": {"trend": 0.40, "momentum": 0.35, "volatility": 0.25},
+
+  "akshare_lookback_days": 500,
+  "akshare_cache_hours": 4
+}
